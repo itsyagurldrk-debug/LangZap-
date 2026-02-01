@@ -1,0 +1,8 @@
+{
+  "name": "LangZap",
+  "short_name": "LangZap",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fdeff4",
+  "theme_color": "#a5b4fc"
+}
