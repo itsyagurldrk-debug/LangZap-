@@ -124,49 +124,36 @@
 
   <textarea id="outputText" placeholder="Translated text..." readonly></textarea>
 </div>
-
 <script>
 async function translateText() {
   const text = document.getElementById("inputText").value;
-  const target = document.getElementById("targetLang").value;
+  const lang = document.getElementById("targetLang").value;
   const output = document.getElementById("outputText");
 
-  if (!text.trim()) {
-    alert("Type something first");
+  if (!text) {
+    output.innerText = "Type something";
     return;
   }
 
-  output.value = "Translating... ⏳";
+  output.innerText = "Translating...";
 
-  const servers = [
-    "https://libretranslate.de/translate",
-    "https://translate.argosopentech.com/translate"
-  ];
+  try {
+    const res = await fetch("https://libretranslate.de/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        q: text,
+        source: "auto",
+        target: lang,
+        format: "text"
+      })
+    });
 
-  for (const url of servers) {
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          q: text,
-          source: "auto",
-          target: target,
-          format: "text"
-        })
-      });
-
-      if (!response.ok) continue;
-
-      const data = await response.json();
-      output.value = data.translatedText;
-      return; // ✅ SUCCESS
-    } catch (e) {
-      console.warn("Server failed:", url);
-    }
+    const data = await res.json();
+    output.innerText = data.translatedText;
+  } catch (e) {
+    output.innerText = "❌ Internet or server issue";
   }
-
-  output.value = "⚠️ All translation servers are busy. Try again in a minute.";
 }
 </script>
 </body>
