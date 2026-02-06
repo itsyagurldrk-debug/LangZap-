@@ -1,3 +1,4 @@
+<
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,34 +127,41 @@
 </div>
 <script>
 async function translateText() {
-  const text = document.getElementById("inputText").value;
+  const text = document.getElementById("inputText").value.trim();
   const lang = document.getElementById("targetLang").value;
   const output = document.getElementById("outputText");
 
   if (!text) {
-    output.innerText = "Type something";
+    output.value= "Type something";
     return;
   }
 
-  output.innerText = "Translating...";
-
-  try {
-    const res = await fetch("https://libretranslate.de/translate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        q: text,
-        source: "auto",
-        target: lang,
-        format: "text"
-      })
+  output.value = "Translating...";
+try {
+    const response = await fetch("https://libretranslate.de/translate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            q: text,           //
+            source: "auto",
+            target: lang,
+            format: "text"
+        })
     });
 
-    const data = await res.json();
-    output.innerText = data.translatedText;
-  } catch (e) {
-    output.innerText = "❌ Internet or server issue";
-  }
+    if (!response.ok) {
+        throw new Error("Server error " + response.status);
+    }
+    const data = await response.json();
+    output.value = data.translatedText;
+
+} catch (err) {
+    console.error(err);
+    output.value= "Translation failed: " + err.message;
+     }
 }
-</script>
+</script> 
 </body>
+</html>
